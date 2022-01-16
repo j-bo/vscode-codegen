@@ -1,8 +1,8 @@
 {
-	"name": "codegen",
+	"name": "codegentool",
 	"displayName": "Codegen tool",
 	"description": "VSCode Extension for codegen tool",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"publisher": "j-bo",
 	"icon": "images/icon.png",
 	"repository": {

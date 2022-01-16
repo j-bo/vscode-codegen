@@ -22,7 +22,7 @@ const execShell = (cmd: string) =>
 });
 
 async function getLastVersion() {
-	let cmd_ret = await execShell('pip list --outdated ');
+	let cmd_ret = await execShell(pipCmd + ' list --outdated ');
 	if(!cmd_ret.includes('failed')) {
 		let outDated = cmd_ret.match(/.*id3codegen.*/g);
 		if(outDated) {
@@ -36,7 +36,7 @@ async function getLastVersion() {
 }
 
 async function getCurrentVersion() {
-	let cmd_ret = await execShell('pip show id3codegen');
+	let cmd_ret = await execShell(pipCmd + ' show id3codegen');
 	if(cmd_ret.includes('failed')) {
 		vscode.window.showWarningMessage('Codegen is not installed.', ...['Install']).then(selection => {
 			installCodegen();
@@ -66,7 +66,7 @@ async function getProjectVersion() {
 }
 
 async function installCodegen() {
-	let cmd_ret = await execShell('pip install id3codegen');
+	let cmd_ret = await execShell(pipCmd + ' install id3codegen');
 	if(!cmd_ret.includes('failed')) {
 		currentCodegenVersion = await getCurrentVersion();
 		vscode.window.showInformationMessage('Successfully updated codegen to v' + currentCodegenVersion + '!');
@@ -79,7 +79,7 @@ async function installCodegen() {
 }
 
 async function updateCodegen() {
-	let cmd_ret = await execShell('pip install -U id3codegen');
+	let cmd_ret = await execShell(pipCmd + ' install -U id3codegen');
 	if(!cmd_ret.includes('failed')) {
 		currentCodegenVersion = await getCurrentVersion();
 		vscode.window.showInformationMessage('Successfully updated codegen to v' + currentCodegenVersion + '!', ...['See Changelog']).then(selection => {
