@@ -2,8 +2,11 @@
 	"name": "id3codegen",
 	"displayName": "id3Codegen",
 	"description": "VSCode Extension for id3 codegen tool",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"publisher": "j-bo",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/j-bo/vscode-codegen.git"},
 	"engines": {
 		"vscode": "^1.39.0"
 	},
@@ -11,15 +14,11 @@
 		"Other"
 	],
 	"activationEvents": [
-		"*"
+		"workspaceContains:**/codegen/*.json"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
-			{
-				"command": "extension.checkVersion",
-				"title": "Check for codegen version"
-			},
 			{
 				"command": "extension.runCodegen",
 				"title": "Run codegen"
