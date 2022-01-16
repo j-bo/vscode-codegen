@@ -1,7 +1,7 @@
 {
-	"name": "id3codegen",
-	"displayName": "id3Codegen",
-	"description": "VSCode Extension for id3 codegen tool",
+	"name": "codegen",
+	"displayName": "Codegen tool",
+	"description": "VSCode Extension for codegen tool",
 	"version": "1.0.0",
 	"publisher": "j-bo",
 	"icon": "images/icon.png",
