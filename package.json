@@ -4,6 +4,7 @@
 	"description": "VSCode Extension for id3 codegen tool",
 	"version": "1.0.0",
 	"publisher": "j-bo",
+	"icon": "images/icon.png",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/j-bo/vscode-codegen.git"},
