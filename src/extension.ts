@@ -130,9 +130,9 @@ function getPipCmd() {
 	const os = require('os');
 	let osName = os.platform();
 	if(osName === 'linux' || osName === 'darwin')  {
-		return 'pip3';
+		return 'python3 -m pip';
 	} else {
-		return 'pip';
+		return 'python -m pip';
 	}
 }
 
@@ -153,7 +153,7 @@ export async function activate({ subscriptions }: vscode.ExtensionContext) {
 	codegenStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
 	codegenStatusBarItem.command = 'extension.runCodegen';
 	subscriptions.push(codegenStatusBarItem);
-	
+
 	let disposableRunCodegen = vscode.commands.registerCommand('extension.runCodegen', async () => {
 		runCodegen();
 	});
