@@ -26,7 +26,7 @@ async function getLastVersion() {
 	if(!cmd_ret.includes('failed')) {
 		let outDated = cmd_ret.match(/.*id3codegen.*/g);
 		if(outDated) {
-			let lastVersion = outDated[0].match(/\d.\d.\d/g);
+			let lastVersion = outDated[0].match(/\d{1,}.\d{1,}.\d{1,}/g);
 			if(lastVersion) {
 				return lastVersion[1];
 			}
@@ -42,7 +42,7 @@ async function getCurrentVersion() {
 			installCodegen();
 		});
 	} else {
-		let localVersion = cmd_ret.match(/\d.\d.\d/g);
+		let localVersion = cmd_ret.match(/\d{1,}.\d{1,}.\d{1,}/g);
 		if(localVersion) {
 			installed = true;
 			codegenStatusBarItem.text = 'codegen v' + localVersion[0];
@@ -57,7 +57,7 @@ async function getProjectVersion() {
 	if(rootWorkspaces?.length === 1) {
 		let uri = vscode.Uri.file(rootWorkspaces[0]+'/codegen/codegen_version.txt');
 		let doc = await vscode.workspace.openTextDocument(uri);
-		let projectVersion = doc.getText().match(/\d.\d.\d/g);
+		let projectVersion = doc.getText().match(/\d{1,}.\d{1,}.\d{1,}/g);
 		if(projectVersion) {
 			return projectVersion[0];
 		}
