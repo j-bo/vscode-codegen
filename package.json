@@ -15,7 +15,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"*","workspaceContains:**/codegen/*.json"
+		"workspaceContains:**/codegen/*.json"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
