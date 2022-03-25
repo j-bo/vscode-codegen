@@ -1,4 +1,6 @@
 # Change Log
+## [1.1.0] - 2022-03-25
+- Now re-use last active terminal instead of always create one when running codegen
 ## [1.0.3] - 2022-03-14
 - Handle version numbers with more than one digit
 ## [1.0.2] - 2022-01-17

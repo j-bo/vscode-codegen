@@ -96,10 +96,22 @@ async function updateCodegen() {
 
 async function runCodegen() {
 	let json = await vscode.workspace.findFiles('codegen/*.json');
+	let root = '.';
+	if(vscode.workspace.workspaceFolders != undefined) {
+		root = vscode.workspace.workspaceFolders[0].uri.fsPath;
+	}
 	if(json.length === 1) {
-		const terminal = vscode.window.createTerminal();
+		let terminal;
+		if(vscode.window.terminals.length == 0) {
+			terminal = vscode.window.createTerminal();
+		} else {
+			terminal = vscode.window.activeTerminal;
+			if(terminal === undefined) {
+				terminal = vscode.window.createTerminal();
+			}
+		}
 		terminal.show();
-    	terminal.sendText('codegen --root_dir . --json_file_path '+ json[0].fsPath);
+    	terminal.sendText('codegen --root_dir ' + root + ' --json_file_path '+ json[0].fsPath);
 	}
 }
 
