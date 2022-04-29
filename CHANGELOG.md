@@ -1,4 +1,6 @@
 # Change Log
+## [1.2.1] - 2022-04-28
+- Removed useless included vsce dependency
 ## [1.2.0] - 2022-04-28
 - Handle multiple JSON API files in the same workspace
 ## [1.1.0] - 2022-03-25
