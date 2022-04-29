@@ -94,14 +94,8 @@ async function updateCodegen() {
 	}
 }
 
-async function runCodegen() {
-	let json = await vscode.workspace.findFiles('codegen/*.json');
-	let root = '.';
-	if(vscode.workspace.workspaceFolders != undefined) {
-		root = vscode.workspace.workspaceFolders[0].uri.fsPath;
-	}
-	if(json.length === 1) {
-		let terminal;
+function runCmdInTerm(root_dir:String, json_path:String) {
+	let terminal;
 		if(vscode.window.terminals.length == 0) {
 			terminal = vscode.window.createTerminal();
 		} else {
@@ -111,7 +105,29 @@ async function runCodegen() {
 			}
 		}
 		terminal.show();
-    	terminal.sendText('codegen --root_dir ' + root + ' --json_file_path '+ json[0].fsPath);
+    	terminal.sendText('codegen --root_dir ' + root_dir + ' --json_file_path '+ json_path);
+}
+
+
+async function runCodegen() {
+	let json = await vscode.workspace.findFiles('codegen/*.json');
+	let root = '.';
+	if(vscode.workspace.workspaceFolders != undefined) {
+		root = vscode.workspace.workspaceFolders[0].uri.fsPath;
+	}
+	if(json.length <= 0) {
+		vscode.window.showErrorMessage('No JSON API file found in codegen directory');
+	} else if(json.length === 1) {
+		runCmdInTerm(root,json[0].fsPath)
+	} else {
+		let paths: Array<string> = []
+		json.forEach(element => paths.push(element.fsPath));
+		const result = await vscode.window.showQuickPick(paths, {
+			placeHolder: 'Choose which JSON API file you want to run:'
+		});
+		if(result != undefined) {
+			runCmdInTerm(root,result)
+		}
 	}
 }
 
