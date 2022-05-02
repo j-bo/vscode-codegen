@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import * as cp from "child_process";
-import { openStdin } from 'process';
 
 let currentCodegenVersion: string;
 let lastCodegenVersion: string;
@@ -10,6 +9,7 @@ let pipCmd: string;
 let newVersion: boolean;
 let installed: boolean;
 let timer: NodeJS.Timer;
+let ctx: vscode.ExtensionContext; 
 
 const execShell = (cmd: string) =>
     new Promise<string>((resolve, reject) => {
@@ -82,6 +82,7 @@ async function updateCodegen() {
 	let cmd_ret = await execShell(pipCmd + ' install -U id3codegen');
 	if(!cmd_ret.includes('failed')) {
 		currentCodegenVersion = await getCurrentVersion();
+		ctx.globalState.update('ignored-version',"");
 		vscode.window.showInformationMessage('Successfully updated codegen to v' + currentCodegenVersion + '!', ...['See Changelog']).then(selection => {
 			if(selection === 'See Changelog') {
 				vscode.env.openExternal(vscode.Uri.parse('https://gitlab.srv.int.id3.eu/biometrics/algos/development/codegen/-/blob/' + currentCodegenVersion + '/CHANGELOG.md'));
@@ -96,7 +97,7 @@ async function updateCodegen() {
 
 function runCmdInTerm(root_dir:String, json_path:String) {
 	let terminal;
-		if(vscode.window.terminals.length == 0) {
+		if(vscode.window.terminals.length === 0) {
 			terminal = vscode.window.createTerminal();
 		} else {
 			terminal = vscode.window.activeTerminal;
@@ -112,32 +113,38 @@ function runCmdInTerm(root_dir:String, json_path:String) {
 async function runCodegen() {
 	let json = await vscode.workspace.findFiles('codegen/*.json');
 	let root = '.';
-	if(vscode.workspace.workspaceFolders != undefined) {
+	if(vscode.workspace.workspaceFolders !== undefined) {
 		root = vscode.workspace.workspaceFolders[0].uri.fsPath;
 	}
 	if(json.length <= 0) {
 		vscode.window.showErrorMessage('No JSON API file found in codegen directory');
 	} else if(json.length === 1) {
-		runCmdInTerm(root,json[0].fsPath)
+		runCmdInTerm(root,json[0].fsPath);
 	} else {
-		let paths: Array<string> = []
+		let paths: Array<string> = [];
 		json.forEach(element => paths.push(element.fsPath));
 		const result = await vscode.window.showQuickPick(paths, {
 			placeHolder: 'Choose which JSON API file you want to run:'
 		});
-		if(result != undefined) {
-			runCmdInTerm(root,result)
+		if(result !== undefined) {
+			runCmdInTerm(root,result);
 		}
 	}
 }
 
 async function checkForUpdate() {
 	lastCodegenVersion = await getLastVersion();
-	if(lastCodegenVersion !== currentCodegenVersion && lastCodegenVersion !== 'N/A') {
+	let ignoredVersion = ctx.globalState.get('ignored-version');
+	if(lastCodegenVersion !== currentCodegenVersion 
+		&& lastCodegenVersion !== ignoredVersion
+		&& lastCodegenVersion !== 'N/A') {
 		newVersion = true;
-		vscode.window.showWarningMessage('A new version of codegen is available : v'+lastCodegenVersion, ...['Update']).then(selection => {
+		vscode.window.showWarningMessage('A new version of codegen is available : v'+lastCodegenVersion, ...['Update','Ignore']).then(selection => {
 			if(selection === 'Update') {
 				updateCodegen();
+			} else if(selection === 'Ignore') {
+				ctx.globalState.update('ignored-version',lastCodegenVersion);
+				vscode.window.showInformationMessage('Version '+lastCodegenVersion+ ' will be ignored.');
 			}
 		});
 	}
@@ -175,17 +182,18 @@ function setUpdateTimer() {
 	timer = setInterval(() => checkVersions(),1000*60*10); // check every 10min
 }
 
-export async function activate({ subscriptions }: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
+	ctx = context;
 	installed = false;
 	pipCmd = getPipCmd();
 	codegenStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
 	codegenStatusBarItem.command = 'extension.runCodegen';
-	subscriptions.push(codegenStatusBarItem);
-
+	context.subscriptions.push(codegenStatusBarItem);
+	
 	let disposableRunCodegen = vscode.commands.registerCommand('extension.runCodegen', async () => {
 		runCodegen();
 	});
-	subscriptions.push(disposableRunCodegen);
+	context.subscriptions.push(disposableRunCodegen);
 
 	currentCodegenVersion = await getCurrentVersion();
 	if(installed) {

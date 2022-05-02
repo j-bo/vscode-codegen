@@ -1,4 +1,6 @@
 # Change Log
+## [1.3.0] - 2022-05-02
+- Added ignore update button
 ## [1.2.1] - 2022-04-28
 - Removed useless included vsce dependency
 ## [1.2.0] - 2022-04-28
